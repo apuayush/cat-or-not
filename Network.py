@@ -1,12 +1,10 @@
 # libraries
 import numpy as np
-import pandas as pd
 
 
 class Network:
     def __init__(self, layer_dims, X, Y):
         """
-
         :param layer_dims:
         :param X: it is the collection of labelled inputs arranged in order (m,n)
         m - no. of independent variable in one sample, n - no. of samples
@@ -15,17 +13,16 @@ class Network:
         self.layer_dims = layer_dims
         self.params = dict()
         self.caches = list()
-        self.dataset = np.array(pd.read_csv(data_location).iloc[:, :].values)
-        self.X = None
-        self.Y = None
-        self.X_train = None
-        self.X_test = None
-        self.Y_test = None
-        self.Y_train = None
+        self.X = X
+        self.Y = Y
+        self.X_train = X[:, 0:int(0.75*X.shape[1])]
+        self.Y_train = Y[:, 0:int(0.75*Y.shape[1])]
+        self.X_test = X[:, int(0.75*X.shape[1]):]
+        self.Y_train = Y[:, int(0.75*X.shape[1]):]
 
-    def start(self):
+    def initialize_parameters(self):
         for i in range(1, len(self.layer_dims)):
-            self.params["W" + str(i)] = np.random.randn(self.layer_dims[i], self.layer_dims[i - 1])
+            self.params["W" + str(i)] = np.random.randn(self.layer_dims[i], self.layer_dims[i - 1])*0.01
             self.params["b" + str(i)] = np.zeros((self.layer_dims[i], 1))
 
     def forward_propagation(self):
