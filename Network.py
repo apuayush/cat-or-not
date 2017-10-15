@@ -28,13 +28,13 @@ class Network:
         for i in range(num_iterations):
             AL, caches = self.forward_propagation
 
-            # cost = self.compute_cost(AL)
+            cost = self.compute_cost(AL)
             grads = self.backward_propagation(AL, caches)
 
-            # self.update_parameters(grads, learning_rate)
+            self.update_parameters(grads, learning_rate)
 
-            # if print_cost and i % 100 == 0:
-            #     print("Cost after iteration %i: %f" % (i, cost))
+            if print_cost and i % 100 == 0:
+                print("Cost after iteration %i: %f" % (i, cost))
 
     @property
     def forward_propagation(self):
@@ -99,11 +99,13 @@ class Network:
             grads['dW' + str(l+1)] = 1 / m * np.dot(dZ, A_prev.T)
             grads['db' + str(l+1)] = 1 / m * np.sum(dZ, keepdims=True, axis=1)
             grads['dA' + str(l+1)] = np.dot(W.T, dZ)
-    
+
         return grads
 
-    def update_parameters(self):
-        pass
+    def update_parameters(self, grads, learning_rate):
+        for l in range(1, len(self.params)//2 + 1):
+            self.params["W" + str(l)] -= learning_rate * grads["dW" + str(l)]
+            self.params["b" + str(l)] -= learning_rate * grads["db" + str(l)]
 
 
 def sigmoid(Z):
