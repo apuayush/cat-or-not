@@ -28,13 +28,13 @@ class Network:
         for i in range(num_iterations):
             AL, caches = self.forward_propagation
 
-            cost = self.compute_cost(AL)
-            # grads = self.backward_propagation(AL, caches)
-            #
+            # cost = self.compute_cost(AL)
+            grads = self.backward_propagation(AL, caches)
+
             # self.update_parameters(grads, learning_rate)
-            #
-            if print_cost and i % 100 == 0:
-                print("Cost after iteration %i: %f" % (i, cost))
+
+            # if print_cost and i % 100 == 0:
+            #     print("Cost after iteration %i: %f" % (i, cost))
 
     @property
     def forward_propagation(self):
@@ -65,7 +65,7 @@ class Network:
         :rtype: decimal
         """
         m = self.Y_train.shape[1]
-        cost = -1/m * np.sum(self.Y_train*np.log(AL)+(1-self.Y_train)*np.log(1-AL))
+        cost = -1 / m * np.sum(self.Y_train * np.log(AL) + (1 - self.Y_train) * np.log(1 - AL))
         cost = np.squeeze(cost)
         return cost
 
@@ -74,7 +74,33 @@ class Network:
         gives a dict of differentiated parameters
         :rtype: dict
         """
-        pass
+        grads = dict()
+        L = len(caches)
+        m = AL.shape[1]
+        Y = self.Y_train
+        # derivative of a sigmoid function
+        dAL = -(np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
+        current_cache = caches[-1]
+
+        dZ = diff_sigmoid(dAL, current_cache[1])
+        A_prev, W, b = current_cache[0]
+
+        grads['dW' + str(L)] = 1 / m * np.dot(dZ, A_prev.T)
+        grads['db' + str(L)] = 1 / m * np.sum(dZ, keepdims=True, axis=1)
+        grads['dA' + str(L)] = np.dot(W.T, dZ)
+        for l in reversed(range(L-1)):
+            current_cache = caches[l]
+            dA_prev = grads['dA' + str(l + 2)]
+
+            dZ = diff_relu(dA_prev, current_cache[1])
+            # current_cache[1] = value of Z at that layer
+            A_prev, W, b = current_cache[0]
+
+            grads['dW' + str(l+1)] = 1 / m * np.dot(dZ, A_prev.T)
+            grads['db' + str(l+1)] = 1 / m * np.sum(dZ, keepdims=True, axis=1)
+            grads['dA' + str(l+1)] = np.dot(W.T, dZ)
+    
+        return grads
 
     def update_parameters(self):
         pass
@@ -85,5 +111,19 @@ def sigmoid(Z):
 
 
 def relu(Z):
-    return np.maximum\
-               (0.0, Z), Z
+    return np.maximum(0.0, Z), Z
+
+
+def diff_sigmoid(dA, activation_cache):
+    Z = activation_cache
+    s = 1 / (1 + np.exp(-Z))
+    dZ = dA * s * (1 - s)
+    return dZ
+
+
+def diff_relu(dA, activation_cache):
+    Z = activation_cache
+    # converting dZ to a correct object
+    dZ = np.array(dA, copy=True)
+    dZ[Z <= 0] = 0
+    return dZ

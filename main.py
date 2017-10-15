@@ -18,4 +18,4 @@ X, Y = pre_processing(X, Y)
 
 net = Network([12288, 50, 25, 12, 6, 3, 1], X, Y)
 net.initialize_parameters()
-net.start()
+net.start(num_iterations=1, print_cost=True)
