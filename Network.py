@@ -25,8 +25,9 @@ class Network:
             self.params["b" + str(i)] = np.zeros((self.layer_dims[i], 1))
 
     def start(self, num_iterations=200, print_cost=False, learning_rate=0.09):
+        m = self.Y_train.shape[1]
         for i in range(num_iterations):
-            AL, caches = self.forward_propagation
+            AL, caches = self.forward_propagation(self.X_train)
 
             cost = self.compute_cost(AL)
             grads = self.backward_propagation(AL, caches)
@@ -36,9 +37,11 @@ class Network:
             if print_cost and i % 100 == 0:
                 print("Cost after iteration %i: %f" % (i, cost))
 
-    @property
-    def forward_propagation(self):
-        A = self.X_train
+        probabilities = self.predict(self.X_test)
+        print("Accuracy: " + str(np.sum((probabilities == self.Y_test) / m)))
+
+    def forward_propagation(self, X):
+        A = X
         caches = []
         L = len(self.params) // 2
 
@@ -106,6 +109,19 @@ class Network:
         for l in range(1, len(self.params)//2 + 1):
             self.params["W" + str(l)] -= learning_rate * grads["dW" + str(l)]
             self.params["b" + str(l)] -= learning_rate * grads["db" + str(l)]
+
+    def predict(self, X):
+        m = X.shape[1]
+        n = len(self.params)
+
+        p, caches = self.forward_propagation(X)
+        for i in range(p.shape[1]):
+            if p[0, i] > 0.5:
+                p[0, i] = 1
+            else:
+                p[0, i] = 0
+
+        return p
 
 
 def sigmoid(Z):
