@@ -1,5 +1,6 @@
 # libraries
 import numpy as np
+from sklearn.utils import shuffle
 
 
 class Network:
@@ -25,8 +26,12 @@ class Network:
             self.params["b" + str(i)] = np.zeros((self.layer_dims[i], 1))
 
     def start(self, num_iterations=200, print_cost=False, learning_rate=0.09):
-        m = self.Y_train.shape[1]
+        m = self.Y_test.shape[1]
         for i in range(num_iterations):
+            self.X_train, self.Y_train = shuffle(self.X_train.T, self.Y_train.T, random_state=i)
+            self.X_train = self.X_train.T
+            self.Y_train = self.Y_train.T
+
             AL, caches = self.forward_propagation(self.X_train)
 
             cost = self.compute_cost(AL)
@@ -38,7 +43,7 @@ class Network:
                 print("Cost after iteration %i: %f" % (i, cost))
 
         probabilities = self.predict(self.X_test)
-        print("Accuracy: " + str(np.sum((probabilities == self.Y_test) / m)))
+        print("Accuracy: " + str(np.sum((probabilities == self.Y_test) / probabilities.shape[1])))
 
     def forward_propagation(self, X):
         A = X
@@ -111,11 +116,10 @@ class Network:
             self.params["b" + str(l)] -= learning_rate * grads["db" + str(l)]
 
     def predict(self, X):
-        m = X.shape[1]
-        n = len(self.params)
 
         p, caches = self.forward_propagation(X)
         for i in range(p.shape[1]):
+            # print(p[0, i])
             if p[0, i] > 0.5:
                 p[0, i] = 1
             else:

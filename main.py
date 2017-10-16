@@ -2,21 +2,26 @@
 from image_classifier import image_classifier
 from Network import Network
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.utils import shuffle
 # other libs
+import numpy as np
 
 
-def pre_processing(X, Y):
+def pre_processing(Y):
     Y = Y.reshape(1, Y.shape[0])
     onehot = OneHotEncoder(categorical_features=[1])
     Y = onehot.fit_transform(Y).toarray()
-    X = X.reshape(X.shape[0], -1).T / 255
-    return X, Y
+    return Y
 
 
 X, Y = image_classifier()
-X, Y = pre_processing(X, Y)
+Y = pre_processing(Y)
 
-net = Network([12288, 50, 25, 12, 6, 3, 1], X, Y)
+X, Y = shuffle(X.T, Y.T, random_state=2)
+X = X.T
+Y = Y.T
+
+net = Network([12288, 100, 62, 22, 16, 3, 1], X, Y)
 net.initialize_parameters()
-net.start(num_iterations=2500, print_cost=True, learning_rate=0.0075)
+net.start(num_iterations=1, print_cost=True, learning_rate=0.0075)
 
