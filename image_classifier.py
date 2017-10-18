@@ -1,9 +1,8 @@
-def image_classifier():
+def image_classifier(path):
     import os, os.path
     import numpy as np
     from PIL import Image
 
-    path = "/home/apurvnit/Projects/cat-or-not/data2"
     valid_images = [".jpg", ".gif", ".png", ".tga"]
     imgs = []
     c = 0

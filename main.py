@@ -5,6 +5,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils import shuffle
 # other libs
 import numpy as np
+import sys
 
 
 def pre_processing(Y):
@@ -13,8 +14,11 @@ def pre_processing(Y):
     Y = onehot.fit_transform(Y).toarray()
     return Y
 
+path = "/home/apurvnit/Projects/cat-or-not/data2"
+if len(sys.argv) == 2:
+    path = sys.argv[1]
 
-X, Y = image_classifier()
+X, Y = image_classifier(path)
 Y = pre_processing(Y)
 
 X, Y = shuffle(X.T, Y.T, random_state=2)
