@@ -1,3 +1,4 @@
+
 def image_classifier(path):
     import os, os.path
     import numpy as np
@@ -23,7 +24,3 @@ def image_classifier(path):
 
     # print(np.array(imgs).shape, np.array(Y).shape)
     return np.array(imgs).T, np.array(Y)
-
-
-
-

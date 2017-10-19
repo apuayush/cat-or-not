@@ -1,7 +1,7 @@
 # libraries
 import numpy as np
 from sklearn.utils import shuffle
-
+import random
 
 class Network:
     def __init__(self, layer_dims, X, Y):
@@ -28,7 +28,7 @@ class Network:
     def start(self, num_iterations=200, print_cost=False, learning_rate=0.09):
         m = self.Y_test.shape[1]
         for i in range(num_iterations):
-            self.X_train, self.Y_train = shuffle(self.X_train.T, self.Y_train.T, random_state=i)
+            self.X_train, self.Y_train = shuffle(self.X_train.T, self.Y_train.T, random_state=random.randint(0,i))
             self.X_train = self.X_train.T
             self.Y_train = self.Y_train.T
 
