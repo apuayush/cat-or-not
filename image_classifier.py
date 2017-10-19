@@ -24,3 +24,14 @@ def image_classifier(path):
 
     # print(np.array(imgs).shape, np.array(Y).shape)
     return np.array(imgs).T, np.array(Y)
+
+
+def rename(dir, pattern, titlePattern):
+    import glob, os
+    for pathAndFilename in glob.iglob(os.path.join(dir, pattern)):
+        title, ext = os.path.splitext(os.path.basename(pathAndFilename))
+        os.rename(pathAndFilename, 
+                  os.path.join(dir, titlePattern % title + ext))
+
+# rename(r'/home/apurvnit/Projects/cat-or-not data/catmapper',r'*.jpg',r'cat.(%s)')
+
